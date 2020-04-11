@@ -63,23 +63,25 @@ public class Events implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (plugin.config.death_penalty_worlds.contains(event.getEntity().getWorld().getName())) {
-            double penalty = 0.0D;
-            double playerBalance = plugin.eco.balance(event.getEntity());
-            if (playerBalance < plugin.config.death_penalty_min) {
-                penalty = plugin.config.death_penalty_min;
-            } else {
-                penalty = (playerBalance / 100) * plugin.config.death_penalty_percent;
+        if (!event.getEntity().hasPermission("heh.bypassdeathpenalty")) {
+            if (plugin.config.death_penalty_worlds.contains(event.getEntity().getWorld().getName())) {
+                double penalty = 0.0D;
+                double playerBalance = plugin.eco.balance(event.getEntity());
+                if (playerBalance < plugin.config.death_penalty_min) {
+                    penalty = plugin.config.death_penalty_min;
+                } else {
+                    penalty = (playerBalance / 100) * plugin.config.death_penalty_percent;
+                }
+                if (penalty > plugin.config.death_penalty_max) {
+                    penalty = plugin.config.death_penalty_max;
+                } else if (penalty < plugin.config.death_penalty_min) {
+                    penalty = plugin.config.death_penalty_min;
+                }
+                if (penalty > 0.0D && plugin.eco.withdraw(event.getEntity(), penalty)) {
+                    event.getEntity().sendMessage(I18n.format("user.death_penalty.message", penalty));
+                    plugin.systemBalance.deposit(penalty, plugin);
+                }
             }
-            if (penalty > plugin.config.death_penalty_max) {
-                penalty = plugin.config.death_penalty_max;
-            } else if (penalty < plugin.config.death_penalty_min) {
-                penalty = plugin.config.death_penalty_min;
-            }
-            if (penalty > 0.0D && plugin.eco.withdraw(event.getEntity(), penalty)) {
-                event.getEntity().sendMessage(I18n.format("user.death_penalty.message", penalty));
-                plugin.systemBalance.deposit(penalty, plugin);
-            }
-        }
+        } 
     }
 }

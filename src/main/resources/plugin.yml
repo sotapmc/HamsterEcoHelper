@@ -28,6 +28,7 @@ permissions:
     children:
       heh.user: true
       heh.admin: true
+      heh.bypassdeathpenalty: true
   heh.user:
     description: Base permission node for players
     default: true
@@ -70,3 +71,6 @@ permissions:
       heh.balance.view: true
       heh.quest.admin: true
       heh.kit.admin: true
+  heh.bypassdeathpenalty:
+    description: Bypass death penalty
+    default: op
